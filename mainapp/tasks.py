@@ -4,7 +4,7 @@ from .models import Video
 
 @shared_task
 def fetch_latest_videos(search_query):
-    api_key = 'YOUR_YOUTUBE_API_KEY'
+    api_key = 'AIzaSyANOIK8E6JYFiNzde_qgUlLwPyKu9dHAoQ'
     url = f'https://www.googleapis.com/youtube/v3/search?part=snippet&q={search_query}&order=date&maxResults=10&key={api_key}'
     
     response = requests.get(url)
