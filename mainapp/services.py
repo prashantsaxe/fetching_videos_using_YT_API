@@ -61,7 +61,7 @@ def save_video_to_db(video_data):
         logger.error(f"Error saving video {video_data.get('id', {}).get('videoId', 'unknown')}: {str(e)}")
         return None, False
 
-async def async_fetch_and_save_videos(query="cricket", max_results=10):
+async def async_fetch_and_save_videos(query="football", max_results=10):
     """Fetch videos and save them to the database asynchronously"""
     try:
         videos = await async_fetch_videos(query, max_results)

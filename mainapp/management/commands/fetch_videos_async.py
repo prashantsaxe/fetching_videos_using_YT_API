@@ -7,7 +7,7 @@ class Command(BaseCommand):
     help = 'Asynchronously fetch latest videos from YouTube and save to database'
 
     def add_arguments(self, parser):
-        parser.add_argument('--query', type=str, default='cricket', help='Search query')
+        parser.add_argument('--query', type=str, default='football', help='Search query')
         parser.add_argument('--max-results', type=int, default=10, help='Maximum number of results')
 
     def handle(self, *args, **options):

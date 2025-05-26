@@ -5,30 +5,36 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from .models import Video
 from .serializers import VideoSerializer
-from .tasks import fetch_youtube_videos
 
 class VideoViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint for viewing YouTube videos.
+    
+    list:
+        Returns a paginated list of videos sorted by published_at in descending order.
+    retrieve:
+        Returns details of a specific video.
     """
-    queryset = Video.objects.all()
+    queryset = Video.objects.all().order_by('-published_at')
     serializer_class = VideoSerializer
     
-    @method_decorator(cache_page(60))  # Cache for 60 seconds
     def list(self, request, *args, **kwargs):
-        """Get all videos with pagination"""
+        """
+        Get all videos with pagination, sorted by published date (newest first).
+        """
+        # The queryset is already ordered by -published_at in the class definition
+        # Just return the standard list implementation which includes pagination
         return super().list(request, *args, **kwargs)
     
     @action(detail=False, methods=['get'])
-    @method_decorator(cache_page(300))  # Cache for 5 minutes
     def by_channel(self, request):
         """Get videos grouped by channel"""
         channel = request.query_params.get('channel', None)
         
         if channel:
-            videos = Video.objects.filter(channel_title__icontains=channel)
+            videos = Video.objects.filter(channel_title__icontains=channel).order_by('-published_at')
         else:
-            videos = Video.objects.all()
+            videos = Video.objects.all().order_by('-published_at')
             
         page = self.paginate_queryset(videos)
         if page is not None:
@@ -45,6 +51,7 @@ class VideoViewSet(viewsets.ReadOnlyModelViewSet):
         max_results = request.data.get('max_results', 10)
         
         try:
+            from .tasks import fetch_youtube_videos
             task = fetch_youtube_videos.delay(query, max_results)
             
             return Response({

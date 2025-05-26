@@ -9,7 +9,7 @@ from .models import Video
 logger = logging.getLogger(__name__)
 
 @shared_task
-def fetch_youtube_videos(query='cricket', max_results=10):
+def fetch_youtube_videos(query='football', max_results=10):
     """
     Fetch YouTube videos based on query and save to database.
     

@@ -92,7 +92,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # REST Framework settings
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ],
+    'SEARCH_PARAM': 'q',
+    'ORDERING_PARAM': 'ordering',
 }
 
 # YouTube API Key 
@@ -108,10 +118,10 @@ CELERY_TIMEZONE = TIME_ZONE
 
 # Celery Beat Schedule
 CELERY_BEAT_SCHEDULE = {
-    'fetch-youtube-videos-every-10-seconds': {
+    'fetch-youtube-videos-every-20-seconds': {
         'task': 'mainapp.tasks.fetch_youtube_videos',
         'schedule': 20.0,  # Every 10 seconds
-        'args': ('cricket', 5),  # Default query with limited results per fetch
+        'args': ('football', 5),  # Default query with limited results per fetch
         'options': {'expires': 9}  # Ensure tasks don't pile up if execution is slow
     },
 }
