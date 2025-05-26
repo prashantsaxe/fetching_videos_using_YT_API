@@ -3,7 +3,7 @@ import requests
 from .models import Video
 
 @shared_task
-def fetch_latest_videos(search_query):
+def fetch_latest_videos(search_query='cricket'):
     api_key = 'AIzaSyANOIK8E6JYFiNzde_qgUlLwPyKu9dHAoQ'
     url = f'https://www.googleapis.com/youtube/v3/search?part=snippet&q={search_query}&order=date&maxResults=10&key={api_key}'
     

@@ -1,26 +1,37 @@
-from rest_framework import generics
-from rest_framework.pagination import PageNumberPagination
-from .models import Video
-from .serializers import VideoSerializer
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.decorators import action
+from rest_framework.routers import DefaultRouter
 from .services import fetch_latest_videos
 
-class VideoPagination(PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 100
+class YoutubeVideoViewSet(viewsets.ViewSet):
 
-class VideoListView(generics.ListAPIView):
-    queryset = Video.objects.all().order_by('-published_at')
-    serializer_class = VideoSerializer
-    pagination_class = VideoPagination
+    
+    @action(detail=False, methods=['get'])
+    def search(self, request):
+        query = request.query_params.get('q', '')
+        max_results = request.query_params.get('max_results', 10)
+        
+        try:
+            max_results = int(max_results)
+        except ValueError:
+            max_results = 10
+            
+        if not query:
+            return Response(
+                {"error": "Search query is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        try:
+            videos = fetch_latest_videos(query=query, max_results=max_results)
+            return Response(videos)
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
-    def get_queryset(self):
-        query = self.request.query_params.get('query', None)
-        if query:
-            return self.queryset.filter(title__icontains=query)
-        return self.queryset
-
-class VideoFetchView(generics.CreateAPIView):
-    def post(self, request, *args, **kwargs):
-        fetch_latest_videos()
-        return Response({"message": "Fetching latest videos initiated."}, status=202)
+# Create a router and register our viewset
+router = DefaultRouter()
+router.register(r'videos', YoutubeVideoViewSet, basename='videos')

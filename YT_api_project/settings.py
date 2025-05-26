@@ -41,6 +41,9 @@ INSTALLED_APPS = [
     "mainapp",
 ]
 
+# YouTube API settings
+YOUTUBE_API_KEY = 'AIzaSyANOIK8E6JYFiNzde_qgUlLwPyKu9dHAoQ'
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
